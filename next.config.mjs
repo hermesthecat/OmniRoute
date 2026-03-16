@@ -15,6 +15,9 @@ const nextConfig = {
   serverExternalPackages: [
     "better-sqlite3",
     "zod",
+    "pino",
+    "pino-pretty",
+    "pino-abstract-transport",
     "child_process",
     "fs",
     "path",
@@ -62,6 +65,7 @@ const nextConfig = {
         "zod",
         "pino",
         "pino-pretty",
+        "pino-abstract-transport",
         "child_process",
         "fs",
         "path",

@@ -30,8 +30,23 @@ RUN mkdir -p /app/data
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/.next/standalone ./
-# Explicitly copy @swc/helpers — not always traced by standalone output but needed at runtime
+# Explicitly copy modules not always traced by standalone output but needed at runtime
 COPY --from=builder /app/node_modules/@swc/helpers ./node_modules/@swc/helpers
+# Pino and all its runtime deps (worker threads load these dynamically)
+COPY --from=builder /app/node_modules/pino ./node_modules/pino
+COPY --from=builder /app/node_modules/pino-abstract-transport ./node_modules/pino-abstract-transport
+COPY --from=builder /app/node_modules/pino-pretty ./node_modules/pino-pretty
+COPY --from=builder /app/node_modules/pino-std-serializers ./node_modules/pino-std-serializers
+COPY --from=builder /app/node_modules/sonic-boom ./node_modules/sonic-boom
+COPY --from=builder /app/node_modules/thread-stream ./node_modules/thread-stream
+COPY --from=builder /app/node_modules/real-require ./node_modules/real-require
+COPY --from=builder /app/node_modules/safe-stable-stringify ./node_modules/safe-stable-stringify
+COPY --from=builder /app/node_modules/quick-format-unescaped ./node_modules/quick-format-unescaped
+COPY --from=builder /app/node_modules/atomic-sleep ./node_modules/atomic-sleep
+COPY --from=builder /app/node_modules/on-exit-leak-free ./node_modules/on-exit-leak-free
+COPY --from=builder /app/node_modules/process-warning ./node_modules/process-warning
+COPY --from=builder /app/node_modules/split2 ./node_modules/split2
+COPY --from=builder /app/node_modules/@pinojs ./node_modules/@pinojs
 COPY --from=builder /app/scripts/run-standalone.mjs ./run-standalone.mjs
 COPY --from=builder /app/scripts/runtime-env.mjs ./runtime-env.mjs
 COPY --from=builder /app/scripts/bootstrap-env.mjs ./bootstrap-env.mjs
