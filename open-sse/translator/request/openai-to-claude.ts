@@ -2,6 +2,7 @@ import { register } from "../registry.ts";
 import { FORMATS } from "../formats.ts";
 import { CLAUDE_SYSTEM_PROMPT } from "../../config/constants.ts";
 import { adjustMaxTokens } from "../helpers/maxTokensHelper.ts";
+import { DEFAULT_MIN_TOKENS } from "../../config/constants.ts";
 import { DEFAULT_THINKING_CLAUDE_SIGNATURE } from "../../config/defaultThinkingSignature.ts";
 
 // Prefix for Claude OAuth tool names to avoid conflicts
@@ -218,6 +219,12 @@ export function openaiToClaudeRequest(model, body, stream) {
       ...(body.thinking.budget_tokens && { budget_tokens: body.thinking.budget_tokens }),
       ...(body.thinking.max_tokens && { max_tokens: body.thinking.max_tokens }),
     };
+
+    // Ensure max_tokens > thinking.budget_tokens (Anthropic API requirement)
+    const budgetTokens = result.thinking.budget_tokens || 0;
+    if (budgetTokens > 0 && result.max_tokens <= budgetTokens) {
+      result.max_tokens = budgetTokens + DEFAULT_MIN_TOKENS;
+    }
   }
 
   // Attach toolNameMap to result for response translation

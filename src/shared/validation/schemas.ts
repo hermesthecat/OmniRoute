@@ -817,7 +817,7 @@ export const createProviderNodeSchema = z
     name: z.string().trim().min(1, "Name is required"),
     prefix: z.string().trim().min(1, "Prefix is required"),
     apiType: z.enum(["chat", "responses"]).optional(),
-    baseUrl: z.string().trim().min(1).optional(),
+    baseUrl: z.string().trim().url("Invalid URL format").optional(),
     type: z.enum(["openai-compatible", "anthropic-compatible"]).optional(),
     chatPath: z.string().trim().startsWith("/").max(500).optional().or(z.literal("")),
     modelsPath: z.string().trim().startsWith("/").max(500).optional().or(z.literal("")),
@@ -837,13 +837,13 @@ export const updateProviderNodeSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   prefix: z.string().trim().min(1, "Prefix is required"),
   apiType: z.enum(["chat", "responses"]).optional(),
-  baseUrl: z.string().trim().min(1, "Base URL is required"),
+  baseUrl: z.string().trim().url("Invalid URL format"),
   chatPath: z.string().trim().startsWith("/").max(500).optional().or(z.literal("")),
   modelsPath: z.string().trim().startsWith("/").max(500).optional().or(z.literal("")),
 });
 
 export const providerNodeValidateSchema = z.object({
-  baseUrl: z.string().trim().min(1, "Base URL and API key required"),
+  baseUrl: z.string().trim().url("Invalid URL format"),
   apiKey: z.string().trim().min(1, "Base URL and API key required"),
   type: z.enum(["openai-compatible", "anthropic-compatible"]).optional(),
   modelsPath: z.string().trim().startsWith("/").max(500).optional().or(z.literal("")),

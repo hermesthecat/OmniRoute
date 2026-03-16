@@ -250,16 +250,17 @@ export class BaseExecutor {
 
         const response = await fetch(url, fetchOptions);
 
-        // Intra-URL retry: if 429 and we haven't exhausted per-URL retries, wait and retry the same URL
+        // Intra-URL retry: if 429/500 and we haven't exhausted per-URL retries, wait and retry the same URL
         if (
-          response.status === HTTP_STATUS.RATE_LIMITED &&
+          (response.status === HTTP_STATUS.RATE_LIMITED ||
+            response.status === HTTP_STATUS.SERVER_ERROR) &&
           (retryAttemptsByUrl[urlIndex] ?? 0) < BaseExecutor.RETRY_CONFIG.maxAttempts
         ) {
           retryAttemptsByUrl[urlIndex] = (retryAttemptsByUrl[urlIndex] ?? 0) + 1;
           const attempt = retryAttemptsByUrl[urlIndex];
           log?.debug?.(
             "RETRY",
-            `429 intra-retry ${attempt}/${BaseExecutor.RETRY_CONFIG.maxAttempts} on ${url} — waiting ${BaseExecutor.RETRY_CONFIG.delayMs}ms`
+            `${response.status} intra-retry ${attempt}/${BaseExecutor.RETRY_CONFIG.maxAttempts} on ${url} — waiting ${BaseExecutor.RETRY_CONFIG.delayMs}ms`
           );
           await new Promise((resolve) => setTimeout(resolve, BaseExecutor.RETRY_CONFIG.delayMs));
           urlIndex--; // re-run this urlIndex on the next loop iteration
