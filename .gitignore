@@ -4,6 +4,7 @@
 .omnivscodeagent/
 omnirouteCloud/
 omnirouteSite/
+docker-data/
 
 # dependencies
 node_modules/
